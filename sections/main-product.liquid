@@ -265,6 +265,7 @@
                   {%- endif -%}
                 {%- endif -%}
               </div>
+        
 
             {% when 'description' %}
               <div class="{% unless block.settings.show_in_quickbuy %}not-in-quickbuy{% endunless %}{% if block.settings.show_in_tab %} product-detail-accordion{% endif %}" {{ block.shopify_attributes }}>
@@ -316,12 +317,43 @@
               <div class="input-row" id="options" {{ block.shopify_attributes }}>
                 {% render 'variant-picker', section: section, product: product, block: block %}
               </div>
-
             
+            {% render 'discount-table' %}
+            {{ product.metafields.custom.your_htmltable | metafield_tag }}
+          <table class="discount" style="width:100%; border-collapse: collapse;">
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td class="popular">Most Popular</td>
+              <td class="deal">Best Deal</td>
+          </tr>
+          <tr>
+            <th>Quantity</th>
+            <th>1+</th>
+            <th>4+</th>
+            <th>6+</th>
+            <th>9+</th>
+            </tr>
+            <tr>
+              <td>Discount</td>
+              <td>-</td>
+              <td>4%</td>
+              <td>8%</td>
+              <td>12%</td>
+          </tr>
+          <tr>
+            <td>Price (each)</td>
+            <td>$49.99</td>
+            <td>$47.99</td>
+            <td>$45.99</td>
+            <td>$43.99</td>
+          </tr>
+        </table>
 
             {% when 'buy_buttons' %}
               {%- assign product_form_present = true -%}
-              {% render 'discount-table' %}
+            
 
               <div class="buy-buttons-row" {{ block.shopify_attributes }}>
                 {% form 'product', product, data-productid: product.id, id: product_form_id, class: 'form product-purchase-form', data-product-id: product.id %}
