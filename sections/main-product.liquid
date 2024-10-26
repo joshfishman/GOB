@@ -185,7 +185,7 @@
 
                   <script type="text/template" data-variant-id="">
                     {%- capture price_html -%}
-                      <div class="price-area">
+                      <div class="price-area" style="margin-left:1rem;">
                         {%- assign cheapest_variant = product.variants | sort: 'price' | first -%}
                         <div class="price h4-style {% if cheapest_variant.compare_at_price > cheapest_variant.price %}on-sale{% endif %}">
                           {% if product.price_varies %}
@@ -320,36 +320,102 @@
             
             {% render 'discount-table' %}
             {{ product.metafields.custom.your_htmltable | metafield_tag }}
-          <table class="discount" style="width:100%; border-collapse: collapse;">
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td class="popular">Most Popular</td>
-              <td class="deal">Best Deal</td>
-          </tr>
-          <tr>
-            <th>Quantity</th>
-            <th>1+</th>
-            <th>4+</th>
-            <th>6+</th>
-            <th>9+</th>
-            </tr>
-            <tr>
-              <td>Discount</td>
-              <td>-</td>
-              <td>4%</td>
-              <td>8%</td>
-              <td>12%</td>
-          </tr>
-          <tr>
-            <td>Price (each)</td>
-            <td>$49.99</td>
-            <td>$47.99</td>
-            <td>$45.99</td>
-            <td>$43.99</td>
-          </tr>
-        </table>
+        <h3>Quantity Discounts</h3>
+        <ul class="volume">
+          <li>
+            <div class="left">
+              1+
+            </div>
+              <div class="right">
+                $49.99/ea
+              </div>
+          </li>
+          <li>
+            <div class="left">
+             <span class="quantity">4+</span>
+              <span class="save">
+                Save 4%
+              </span>
+            </div>
+              <div class="right">
+                $47.99/ea
+                <s>$49.99</s>
+              </div>
+          </li>
+           <li>
+            <div class="left">
+              <span class="quantity">6+</span>
+               <span class="purple highlight">{% render 'svg-star' %} Most Popular</span>
+              <span class="save">
+                Save 8%
+              </span>
+            </div>
+              <div class="right">
+                $45.99/ea
+                <s>$49.99</s>
+              </div>
+          </li>
+          <li>
+            <div class="left">
+              <span class="quantity">9+</span>             
+              <span class="deal highlight">{% render 'svg-star' %} Best Deal</span>
+              <span class="save">
+                Save 8%
+              </span>
+            </div>
+              <div class="right">
+                $43.99/ea
+                <s>$49.99</s>
+              </div>
+          </li>
+        </ul>
+<style>
+  .volume {
+    margin-left:0;
+  }
+  .volume li {
+    list-style-type:none;
+    border: 1px solid #A7ABAF;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin: 0 0 0.5rem 0;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.25rem;
+  }
+
+  .volume .left. .volume .right{
+    font-size:1.25rem;
+    width:3rem;
+  }
+
+   .volume s {
+    font-weight:400;
+    font-size: 0.8rem;
+     display:block;
+  }
+  .highlight svg {
+    margin-left: 0.25rem;
+    color: #eaaf58;
+  }
+  .highlight {
+    font-size: 0.8rem;
+  }
+ 
+  .popular {
+    color: #6D0073;
+  }
+  .deal {
+    color: #009E20;
+  }
+  .save {
+    color: #F90303;
+    font-size: 1rem;
+    display: block;
+  }
+   
+</style>
 
             {% when 'buy_buttons' %}
               {%- assign product_form_present = true -%}
@@ -375,6 +441,116 @@
                           <a href="#" data-quantity="down">{% render 'svg-minus' %}</a>
                           <input aria-label="{{ 'products.product.quantity' | t }}" id="quantity" type="text" name="quantity" value="1" />
                           <a href="#" data-quantity="up">{% render 'svg-plus' %}</a>
+                         <div class="price-container" {{ block.shopify_attributes }}>
+                <div class="variant-visibility-area">
+                  {%- for variant in product.variants -%}
+                    <script type="text/template" data-variant-id="{{ variant.id }}">
+                      {%- capture price_html -%}
+                        <div class="price-area">
+                          <div class="price h4-style {% if variant.compare_at_price > variant.price %}on-sale{% endif %}">
+                            <span class="current-price theme-money">
+                              {%- if settings.product_currency_code_enabled -%}
+                                {{- variant.price | money_with_currency -}}
+                              {%- else -%}
+                                {{- variant.price | money -}}
+                              {%- endif -%}
+                            </span>
+                            {% if variant.compare_at_price > variant.price %}
+                            <span class="was-price theme-money">{{ variant.compare_at_price | money }}</span>
+                            {% endif %}
+                          </div>
+
+                          {% render 'unit-price', variant: variant %}
+                        </div>
+                      {%- endcapture -%}
+                      {{- price_html -}}
+                    </script>
+                    {%- if current_variant and current_variant.id == variant.id -%}{{ price_html }}{%- endif -%}
+                  {%- endfor -%}
+
+                  <script type="text/template" data-variant-id="">
+                    {%- capture price_html -%}
+                      <div class="price-area">
+                        {%- assign cheapest_variant = product.variants | sort: 'price' | first -%}
+                        <div class="price h4-style {% if cheapest_variant.compare_at_price > cheapest_variant.price %}on-sale{% endif %}">
+                          {% if product.price_varies %}
+                            <span class="price__from">{{ 'products.listing.from' | t }}</span>
+                          {% endif %}
+                          <span class="current-price theme-money">
+                            {%- if settings.product_currency_code_enabled -%}
+                              {{ cheapest_variant.price | money_with_currency }}
+                            {%- else -%}
+                              {{ cheapest_variant.price | money }}
+                            {%- endif -%}
+                          </span>
+                          {% if cheapest_variant.compare_at_price > cheapest_variant.price %}
+                            <span class="was-price theme-money">{{ cheapest_variant.compare_at_price | money }}</span>
+                          {% endif %}
+
+                          {% render 'unit-price', variant: cheapest_variant %}
+                        </div>
+                      </div>
+                    {%- endcapture -%}
+                    {{- price_html -}}
+                  </script>
+
+                  {% if current_variant == false %}
+                    {{- price_html -}}
+                  {% endif %}
+                </div>
+
+                <div class="price-descriptors">
+
+                  {%- form 'product', product, data-productid: product.id, id: product_form_installments_id -%}
+                    <input type="hidden" name="id" data-productid="{{ product.id }}" value="{% if current_variant %}{{ current_variant.id }}{% endif %}">
+                    {{ form | payment_terms }}
+                  {%- endform -%}
+
+                  {%- if block.settings.show_tax_and_shipping -%}
+                    {%- if cart.taxes_included or shop.shipping_policy.body != blank -%}
+                      <div class="product-policies">
+                        {%- if cart.taxes_included -%}
+                          {{ 'products.product.include_taxes' | t }}
+                        {%- endif -%}
+                        {%- if shop.shipping_policy.body != blank -%}
+                          {{ 'products.product.shipping_policy_html' | t: link: shop.shipping_policy.url }}
+                        {%- endif -%}
+                      </div>
+                    {%- endif -%}
+                  {%- endif -%}
+
+                  {% if section.settings.inventory_transfers_enable %}
+                    <div class="product-inventory-transfer {% unless current_variant.incoming %}product-inventory-transfer--none{% endunless %}">
+                      {%- if current_variant.incoming -%}
+                        {%- if current_variant.next_incoming_date -%}
+                          {%- assign date = current_variant.next_incoming_date | date: format: 'date' -%}
+                          {%- if current_variant.available -%}
+                            {{ 'products.transfers.will_not_ship_until' | t: date: date }}
+                          {%- else -%}
+                            {{ 'products.transfers.will_be_in_stock_after' | t: date: date }}
+                          {%- endif -%}
+                        {%- else -%}
+                          {{ 'products.transfers.waiting_for_stock' | t }}
+                        {%- endif -%}
+                      {%- endif -%}
+                    </div>
+                  {% endif %}
+                </div>
+                {%- if block.settings.enable_product_reviews_by_price and product.metafields.reviews.rating_count != blank -%}
+                  {%- assign rating_count = product.metafields.reviews.rating_count | plus: 0 -%}
+                  {%- if rating_count > 0 -%}
+                    <div class="theme-product-reviews">
+                      <a href="{{ product.url }}#shopify-product-reviews">
+                        {% render 'rating', rating_value: product.metafields.reviews.rating.value %}
+                        <span class="cc-rating-custom-caption">
+                          {{ rating_count }} {{ 'products.product.reviews_link' | t: count: rating_count | downcase }}
+                        </span>
+                      </a>
+                    </div>
+                  {%- endif -%}
+                {%- endif -%}
+              </div>
+        
                         </div>
                       {% endif %}
                       <div class="quantity-submit-row__submit input-row">
@@ -385,6 +561,7 @@
                             {{- 'products.product.add_to_cart' | t -}}
                           {%- endif -%}
                         {%- endcapture -%}
+                        
                         <button class="button button--large" type="submit" data-add-to-cart-text="{{ add_to_cart_text | escape }}">
                           {{- add_to_cart_text -}}
                         </button>
